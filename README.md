@@ -1,4 +1,4 @@
-# Automatic Generation of ML-pipelines using PonyGE2 🌿
+## Automatic Generation of ML-pipelines using PonyGE2
 
 GE-Pipe is an implementation based on the [PonyGE2](https://github.com/PonyGE/PonyGE2) library (that uses Grammatical Evolution, GE), in order to solve the Automatic Workflow Composition (AWC) problem.
 
@@ -11,7 +11,7 @@ python ponyge.py
 ```
 
 
-#### Generación Automática de Pipelines de ML utilizando PonyGE2 🌿
+## Generación Automática de Pipelines de ML utilizando PonyGE2
 
 Ge-Pipe es una implementación basada en la librería [PonyGE2](https://github.com/PonyGE/PonyGE2) (que utiliza Evolución Gramatical), como propuesta al AWC problem.
 
