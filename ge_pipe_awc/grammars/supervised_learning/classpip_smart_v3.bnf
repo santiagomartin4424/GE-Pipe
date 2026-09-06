@@ -1,0 +1,115 @@
+<e>  ::= my_pipeline = Pipeline([<steps>])
+
+<steps>  ::= <preprocess_list> <classifier_step>
+           | <classifier_step>
+
+<preprocess_list> ::= <preprocess_step>,
+                     | <preprocess_step>, <preprocess_list>
+
+<preprocess_step>  ::= (imputer, <imputer_obj>)
+                     | (scaler, <scaler_obj>)
+                     | (augmentation, <augmentation_obj>)
+                     | (selection, <selection_obj>)
+                     | (extraction, <extraction_obj>)
+                     | (balance, <balance_obj>)
+
+<classifier_step>  ::= (clf, <classifier_obj>)
+
+
+
+# --- PREPROCESSING OBJECTS ---
+<imputer_obj>      ::= SimpleImputer(strategy=<weights>)
+                     | KNNImputer(weights=<imp_strat>, n_neighbors=<int_small>)
+
+<scaler_obj>       ::= MinMaxScaler()
+                     | StandardScaler(with_mean=<bool>, with_std=<bool>)
+                     | RobustScaler(with_centering=<bool>, with_scaling=<bool>)
+                     | Normalizer(norm=<norm>)
+
+<augmentation_obj> ::= Nystroem(kernel=<nys_kern>, gamma=<gamma_log>, n_components=<int_medium>, degree=<int_tiny>, coef0=<float_m1_1>)
+                     | RBFSampler(gamma=<gamma_log>, n_components=<int_medium>)
+
+<selection_obj>    ::= VarianceThreshold()
+                     | SelectPercentile(percentile=<int_large>)
+                     | SelectFwe(alpha=<alpha_fwe>)
+
+<extraction_obj>   ::= FeatureAgglomeration(n_clusters=<int_medium>, metric=<fagg_aff>, linkage=<fagg_link>)
+                     | PCA(n_components=<pca_comp>, whiten=<bool>)
+                     | FastICA(n_components=<int_medium>, algorithm=<ica_alg>, whiten=<bool>, fun=<ica_fun>)
+                     | TruncatedSVD(n_components=<int_small>, algorithm=<svd_alg>)
+
+<balance_obj>      ::= RandomOverSampler(sampling_strategy=<samp_strat_smote>)
+                     | RandomUnderSampler(sampling_strategy=<samp_strat_all>, replacement=<bool>)
+                     | SMOTE(sampling_strategy=<samp_strat_smote>, k_neighbors=<int_tiny>)
+                     | SMOTETomek(sampling_strategy=<samp_strat_smote>)
+
+
+
+# --- CLASSIFIER OBJECTS ---
+<classifier_obj> ::= DecisionTreeClassifier(criterion=<crit>, max_depth=<dt_depth>, min_samples_split=<int_medium>, max_features=<f_0_1>, min_samples_leaf=<int_small>, class_weight=<c_weight_b>)
+                   | RandomForestClassifier(n_estimators=<int_large>, criterion=<crit>, max_features=<max_f_cat>, min_samples_split=<int_medium>, min_samples_leaf=<int_small>, bootstrap=<bool>, class_weight=<c_weight_all>)
+                   | ExtraTreesClassifier(n_estimators=<int_large>, criterion=<crit>, max_features=<max_f_cat>, min_samples_split=<int_medium>, min_samples_leaf=<int_small>, bootstrap=<bool>, class_weight=<c_weight_all>)
+                   | AdaBoostClassifier(n_estimators=<int_large>, learning_rate=<float_01_2>)
+                   | KNeighborsClassifier(n_neighbors=<int_medium>, weights=<imp_strat>, p=<int_small>)
+                   | GaussianNB(var_smoothing=<float_prec_log>)
+                   | BernoulliNB(alpha=<float_reg_log>, fit_prior=<bool>)
+                   | MultinomialNB(alpha=<float_reg_log>, fit_prior=<bool>)
+                   | LinearSVC(penalty='l2', loss=<l_loss>, dual=True, tol=<float_prec_log>, C=<float_reg_log>, class_weight=<c_weight_b>)
+                   | LinearSVC(penalty='l1', loss='squared_hinge', dual=False, tol=<float_prec_log>, C=<float_reg_log>, class_weight=<c_weight_b>)
+                   | LogisticRegression(penalty='l2', dual=False, C=<float_reg_log>, class_weight=<c_weight_b>)
+                   | LogisticRegression(penalty='l1', dual=False, solver='saga', C=<float_reg_log>, class_weight=<c_weight_b>)
+                   | SGDClassifier(loss=<sgd_loss>, alpha=<float_prec_log>, l1_ratio=<f_0_1>, tol=<float_prec_log>, epsilon=<float_prec_log>, eta0=<float_prec_log>, power_t=<f_0_1>, average=<bool>, class_weight=<c_weight_b>)
+                   | QuadraticDiscriminantAnalysis(reg_param=<f_0_1>)
+                   | LinearDiscriminantAnalysis(solver='eigen', shrinkage='auto', n_components=<int_small>, tol=<float_prec_log>)
+                   | MLPClassifier(hidden_layer_sizes=<mlp_layers>, alpha=<float_prec_log>, learning_rate_init=<float_prec_log>, solver='adam', activation='relu', max_iter=100)
+
+
+
+# --- UNIFIED VALUE RULES ---
+# Enteros (Unificados por escala de impacto)
+<int_tiny>    ::= 2 | 3
+<int_small>   ::= 2 | 3 | 5 | 8 | 10
+<int_medium>  ::= 2 | 10 | 25 | 40 | 50
+<int_large>   ::= 10 | 25 | 50 | 75 | 100
+<int_ext>     ::= 10 | 64 | 128 | 200 | 256
+
+# Proportional floats (0.0 a 1.0)
+<f_0_1>       ::= 0.01 | 0.25 | 0.5 | 0.75 | 1.0
+<pca_comp>    ::= 0.5 | 0.8 | 0.9 | 0.95 | 0.99
+<float_m1_1>  ::= -1.0 | -0.5 | 0.0 | 0.5 | 1.0
+<float_01_2>  ::= 0.1 | 0.5 | 1.0 | 1.5 | 2.0
+
+# Logarithmic scales (Critical for convergence)
+<float_prec_log> ::= 1e-7 | 1e-5 | 1e-3 | 0.1
+<float_reg_log>  ::= 0.001 | 0.01 | 0.1 | 1.0 | 10.0 | 100.0
+<gamma_log>      ::= 1e-5 | 1e-3 | 0.01 | 0.1 | 1.0 | 10.0
+<alpha_fwe>      ::= 0.001 | 0.01 | 0.05 | 0.1
+
+# Depth of trees
+<dt_depth>    ::= None | 3 | 5 | 10 | 25
+
+
+# --- CATEGORICAL ---
+<crit>              ::= gini | entropy
+<bool>              ::= True | False
+<imp_strat>         ::= uniform | distance
+<weights>           ::= mean | median | most_frequent
+<norm>              ::= l1 | l2 | max
+<nys_kern>          ::= rbf | cosine | sigmoid | poly
+<svc_kern>          ::= rbf | sigmoid | poly | linear
+<fagg_aff>          ::= euclidean | manhattan | cosine
+<fagg_link>         ::= ward | complete | average
+<ica_alg>           ::= parallel | deflation
+<ica_fun>           ::= logcosh | exp | cube
+<svd_alg>           ::= arpack | randomized
+<samp_strat_smote>  ::= minority | notminority | notmajority | allstrategy | auto
+<samp_strat_all>    ::= minority | notminority | notmajority | allstrategy | notremaining
+<max_f_cat>         ::= sqrt | log2
+<c_weight_b>        ::= balanced | None
+<c_weight_all>      ::= balanced | balanced_subsample | None
+<l_pen>             ::= l1 | l2
+<l_loss>            ::= hinge | squared_hinge
+<sgd_loss>          ::= log_loss | hinge | modified_huber | squared_hinge | perceptron
+<mlp_solv>          ::= lbfgs | sgd | adam
+<mlp_act>           ::= identity | logistic | tanh | relu
+<mlp_layers>        ::= (50,) | (100,) | (50, 25)

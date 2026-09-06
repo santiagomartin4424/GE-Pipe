@@ -1,0 +1,30 @@
+CACHE:                  True
+CODON_SIZE:             10000
+CROSSOVER:              subtree
+CROSSOVER_PROBABILITY:  0.8
+DATASET_TRAIN: /home/santi/Escritorio/awc_ge/datasets/processed_datasets/germancredit/germancredit_train.csv
+DATASET_TEST:           None
+EXPERIMENT_NAME: experimento_ligeros_germancredit_train_classpip_smart_v3
+FILE_PATH:              /home/santi/Escritorio/PONYGETRUCO/PonyGE2/results
+DEBUG:                  False
+ERROR_METRIC:           balanced_accuracy
+GENERATIONS:            100
+MAX_GENOME_LENGTH:      500
+GRAMMAR_FILE: supervised_learning/classpip_smart_v3.bnf
+INITIALISATION:         PI_grow
+INVALID_SELECTION:      False
+MAX_INIT_TREE_DEPTH:    8
+MAX_TREE_DEPTH:         11
+MUTATION:               int_flip_per_codon
+POPULATION_SIZE:        100
+FITNESS_FUNCTION:       supervised_learning.supervised_learning_pipclean
+REPLACEMENT:            generational
+SELECTION:              tournament
+TOURNAMENT_SIZE:        5
+VERBOSE: 		        False
+MAX_ITER:               400
+ELITE_SIZE:             3
+MULTICORE:              True
+CORES:                  32
+
+
