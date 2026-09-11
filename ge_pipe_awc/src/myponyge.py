@@ -84,20 +84,18 @@ def execute_refit_with_timeout(pipeline, X_train, y_train, timeout_seconds=1200)
     )
     p.start()
 
-    # El proceso hijo debe cerrar su copia del extremo del padre si no lo usa,
-    # y el padre debe cerrar su copia del extremo del hijo.
-    # Cierre de la copia no utilizada en el padre. El padre no necesita el extremo de envio del hijo (child_conn).
+    # Close the copy not used by the father. The father does not need the sending extreme of the child(child_conn).
     child_conn.close()
     
     if parent_conn.poll(timeout=timeout_seconds):
         try:
             status, payload = parent_conn.recv()
-            parent_conn.close() # Cierre del extremo del padre antes de recolección
+            parent_conn.close() # Finally, close the father extreme before recolection.
             p.join()
 
             if status == "success":
                 print("✅ The re-fit was successful")
-                return payload, True
+                return payload, True    #trained pipeline returned to the search loop
             else:
                 print(f"⚠️ Error during re-fit: {payload}")
                 return None, False
@@ -112,9 +110,8 @@ def execute_refit_with_timeout(pipeline, X_train, y_train, timeout_seconds=1200)
         print(f"⏱️ TIMEOUT: The re-fit exceeded the limit of {mins:.2f} minutes ({timeout_seconds}s).")
         print("Closing re-fit process and any sub-processes...")
 
-        # 1. Cerrar el tubo en el padre primero para evitar bloqueos de I/O
+        # Close the father pipe first, to avoid I/O deadlocks
         parent_conn.close()
-
         try:
             import psutil
             parent_proc = psutil.Process(p.pid)
@@ -127,10 +124,9 @@ def execute_refit_with_timeout(pipeline, X_train, y_train, timeout_seconds=1200)
         except Exception:
             pass
 
-        # 3. Eliminar el proceso principal del re-fit
+        # Delete the main process of the re-fit
         p.kill()
         p.join()
-
         return None, False
 
 
@@ -149,18 +145,18 @@ def sigalrm_handler(signum, frame):
 
 # 4. Function to clean the Pool of processes once the evolutionary process (search loop) has finished.
 def _cleanup_pool():
-    """Función auxiliar para cerrar el Pool de la evolución de forma limpia."""
+    """Auxiliar function to close the evolution Pool in a clean way."""
 
     # 2. Close the Pool of multiprocessing, cleaning their queues safely.
     if params.get('MULTICORE') and 'POOL' in params and params['POOL'] is not None:
         try:
             params['POOL'].terminate() # Tells the Pool to stop accepting tasks.
-            # NO se llama a params['POOL'].join() aquí porque si las colas (Queues) 
-            # de IPC quedaron llenas tras el SIGALRM, join() se bloquea indefinidamente.
+            # Here we should not call params['POOL'].join(), because if the IPC Queues are full
+            # after SIGALRM, join() is blocked for undefined time.
         except Exception as e:
             print(f"Error closing the Pool: {e}")
         finally:
-            params['POOL'] = None      # Delete the reference so that it doesn't interfere with the memory of future executions.
+            params['POOL'] = None      # Always delete the reference so that it doesn't interfere with the memory of future executions.
 
     # 3. Cleaning of the residual processes with psutil, without killing the father.
     try:

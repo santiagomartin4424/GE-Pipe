@@ -17,3 +17,4 @@ scipy==1.17.1
 six==1.17.0
 sklearn-compat==0.1.5
 threadpoolctl==3.6.0
+psutil
